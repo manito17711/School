@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <deque>
 #include <math.h>
-
 #include <string.h>
+
 
 using namespace std;
 
@@ -20,10 +20,9 @@ bool operator==(const node& lhs, const node& rhs)
     return (lhs._c == rhs._c) && (lhs._r == rhs._r);
 }
 
-const unsigned int ARR_LEN = 10;
-int position_visited[ARR_LEN][ARR_LEN];
-int arr2[ARR_LEN][ARR_LEN];
 
+// input matrix
+const unsigned int ARR_LEN = 10;
 int arr[ARR_LEN][ARR_LEN] = {
     { 0, -1,  0,  0,  0,  0, -1,  0,  0,  0 },
     { 0, -1,  0, -1, -1,  0,  0,  0, -1,  0 },
@@ -37,16 +36,22 @@ int arr[ARR_LEN][ARR_LEN] = {
     { 0,  0,  0, -1,  0,  0, -1,  0,  0,  0 }
 };
 
+// global variables
+int position_visited[ARR_LEN][ARR_LEN];
+int arr2[ARR_LEN][ARR_LEN];
 
+
+// function declarations
 void add_node(deque<node>& dq, const node& nd);
 void print_arr(const int p_arr[][ARR_LEN]);
 void print_path(deque<node>& res);
 void print_node(const node& n);
+void mark_pos_visited(int r, int c);
 bool is_position_valid(int r, int c);
 node find_next_node(deque<node>& res, node nd);
 
 
-int main(int argc, char *argv[])
+int main()
 {
     memset(position_visited, 0, (ARR_LEN * ARR_LEN * sizeof(int)));
     memset(arr2, 0, (ARR_LEN * ARR_LEN * sizeof(int)));
@@ -58,7 +63,7 @@ int main(int argc, char *argv[])
     dq.push_back(n0);
     position_visited[0][0] = 1;
 
-    // wavefront algorithm
+    // algorithm.. search in four direction from current cell.
     while(!dq.empty())
     {
         node nd = dq.front();
@@ -66,7 +71,7 @@ int main(int argc, char *argv[])
         if (nd._r + 1 == ARR_LEN && nd._c + 1 == ARR_LEN)
             break;
 
-
+        // in order to avoid unnecessary recursion, add_node function marks visited possitions
         node right_node (nd._r, nd._c + 1);
         right_node._val = nd._val + 1;
         add_node(dq, right_node);
@@ -95,9 +100,9 @@ int main(int argc, char *argv[])
 
 void print_arr(const int p_arr[][ARR_LEN])
 {
-    for (int r = 0; r < ARR_LEN; ++r)
+    for (size_t r = 0; r < ARR_LEN; ++r)
     {
-        for (int c = 0; c < ARR_LEN; ++c)
+        for (size_t c = 0; c < ARR_LEN; ++c)
         {
             (p_arr[r][c]) ? printf(" 1 ") : printf(" - ");
         }
@@ -111,7 +116,6 @@ void print_arr(const int p_arr[][ARR_LEN])
 
 node find_next_node(deque<node>& res, node nd)
 {
-    node n1 = res.back();
     for (int i = res.size() - 1; i >= 0; --i)
     {
         node n1 = res[i];
@@ -189,13 +193,20 @@ void add_node(deque<node>& dq, const node& nd)
         return;
 
 
-    // add the node
+    // add node to deque
     dq.push_back(nd);
 
 
     // mark position as visited
-    position_visited[nd._r][nd._c] = 1;
+    mark_pos_visited(nd._r, nd._c);
 }
+
+
+void mark_pos_visited(int r, int c)
+{
+    position_visited[r][c] = 1;
+}
+
 
 void print_node(const node& n)
 {
